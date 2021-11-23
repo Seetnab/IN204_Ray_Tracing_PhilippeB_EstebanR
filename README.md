@@ -7,6 +7,7 @@ I)	Analyse du projet:
 			-Sauvegarder une image
 			-Retracer un rayon
 			-Fonction de définition de l'espace scénique (position caméra, objets,...)
+			-Opérations sur les vecteurs
 			-Avoir une bibliothèque d'objets assez riche + extensive
 			-Supporter les couleurs, textures, transparences et réflexions
 			-Avoir unne bibliothèque avec des classes encapsulant plusieurs moteurs de lancer de rayons
