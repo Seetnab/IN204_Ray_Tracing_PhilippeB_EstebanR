@@ -5,6 +5,8 @@ I)	Analyse du projet:
 		A)	Principales
 			-AFFICHER UNE IMAGE
 			-Sauvegarder une image
+			-Retracer un rayon
+			-Fonction de définition de l'espace scénique (position caméra, objets,...)
 			-Avoir une bibliothèque d'objets assez riche + extensive
 			-Supporter les couleurs, textures, transparences et réflexions
 			-Avoir unne bibliothèque avec des classes encapsulant plusieurs moteurs de lancer de rayons
@@ -25,6 +27,7 @@ I)	Analyse du projet:
 		-Visionaray
 		-POVray
 		-OpenRT
+		-OpenCV (affichage d'images)
 
 II)	Architecture:
 	1)	Classes
