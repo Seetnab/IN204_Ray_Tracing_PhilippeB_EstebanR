@@ -4,6 +4,7 @@ I)	Analyse du projet:
 	1)	Fonctionnalités
 		A)	Principales
 			-AFFICHER UNE IMAGE
+			-Sauvegarder une image
 			-Avoir une bibliothèque d'objets assez riche + extensive
 			-Supporter les couleurs, textures, transparences et réflexions
 			-Avoir unne bibliothèque avec des classes encapsulant plusieurs moteurs de lancer de rayons
