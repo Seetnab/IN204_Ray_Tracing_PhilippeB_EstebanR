@@ -29,6 +29,7 @@ I)	Analyse du projet:
 		-POVray
 		-OpenRT
 		-OpenCV (affichage d'images)
+		-Sfml
 
 II)	Architecture:
 	1)	Classes
