@@ -123,10 +123,6 @@ class ray{
         }
 };
 
-class scene_basic_object{
-    private:
-    public:
-};
 
 
 #endif
