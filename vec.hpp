@@ -1,6 +1,7 @@
 #ifndef CLASSES_HPP
 #define CLASSES_HPP
 #include <iostream>
+#include <cmath>
 
 //Classe générale pour un triplet
 template <typename T>
@@ -113,13 +114,13 @@ class ray{
         ray(const ray &aVector) : origin(aVector.origin), direction(aVector.direction), max_reflection(aVector.max_reflection){}
         ~ray(){}
         //Méthodes de lecture
-        point getOrigin(){
+        point getOrigin() const{
             return origin;
         }
-        vec getDirection(){
+        vec getDirection() const{
             return direction;
         }
-        int getMax_reflection(){
+        int getMax_reflection() const {
             return max_reflection;
         }
         //Méthode de déplacement le long du rayon
