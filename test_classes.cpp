@@ -1,4 +1,5 @@
-#include "classes.hpp"
+#include "vec.hpp"
+#include "objects.hpp"
 #include <iostream>
 
 void test_operator(){
@@ -13,7 +14,15 @@ void test_operator(){
     std::cout << a.prod_vect(b) << std::endl;
 }
 
+void test_objects(){
+    sphere s;
+    scene sc;
+    sc.list_objects.push_back(&s);
+    sc.list_objects[0]->hit_object();
+}
+
 int main(){
     //test_operator();
+    //test_objects();
     return 0;
 }

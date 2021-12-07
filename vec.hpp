@@ -105,17 +105,22 @@ class ray{
     private:
         point origin;
         vec direction;
+        //Nombre max de reflexion d'un rayon
+        int max_reflection;
     public:
         ray(){}
-        ray(point anOrigin, vec aDirection) : origin(anOrigin), direction(aDirection){}
-        ray(const ray &aVector) : origin(aVector.origin), direction(aVector.direction){}
+        ray(point anOrigin, vec aDirection, int aMax_reflection) : origin(anOrigin), direction(aDirection), max_reflection(aMax_reflection){}
+        ray(const ray &aVector) : origin(aVector.origin), direction(aVector.direction), max_reflection(aVector.max_reflection){}
         ~ray(){}
         //Méthodes de lecture
         point getOrigin(){
             return origin;
         }
-        point getDirection(){
+        vec getDirection(){
             return direction;
+        }
+        int getMax_reflection(){
+            return max_reflection;
         }
         //Méthode de déplacement le long du rayon
         point move(double step){
