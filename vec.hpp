@@ -86,7 +86,7 @@ class triple{
 
 //Création d'alias sur les triplets pour bien définir les objets utilisés dans le programme
 //Décrit les couleurs en RGB
-typedef triple<int> color;
+typedef triple<double> color;
 //Décrit un point (x,y,z) dans l'espace
 typedef triple<double> point;
 //Décrit un vecteur (x,y,z) dans l'espace
