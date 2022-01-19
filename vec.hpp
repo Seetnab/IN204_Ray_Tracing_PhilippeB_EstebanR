@@ -1,6 +1,7 @@
 #ifndef CLASSES_HPP
 #define CLASSES_HPP
 #include <iostream>
+#include <ostream>
 #include <cmath>
 
 //Classe générale pour un triplet
@@ -93,10 +94,10 @@ typedef triple<double> point;
 typedef triple<double> vec;
 
 //Surcharge flux de données en écriture pour afficher les triplets
-template<class charT, class charTraits, typename T>
-std::basic_ostream<charT>& operator <<(std::basic_ostream<charT, charTraits>& theStream, const triple<T>& aTriple)
+template<typename T>
+std::ostream& operator <<(std::ostream& theStream, const triple<T>& aTriple)
 {
-    theStream << "(" << aTriple.getX() << "," << aTriple.getY() << "," << aTriple.getZ() << ")" << std::endl; 
+    theStream << "(" << aTriple.getX() << "," << aTriple.getY() << "," << aTriple.getZ() << ")"; 
     return theStream;
 }
 

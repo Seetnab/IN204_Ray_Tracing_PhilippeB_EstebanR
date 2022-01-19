@@ -5,20 +5,24 @@
 void test_operator(){
     vec a(1,2,3);
     vec b(1,1,1);
-    std::cout << a+b << std::endl;
-    std::cout << a-b << std::endl;
-    std::cout << a*2 << std::endl;
-    std::cout << b/2 << std::endl;
-    std::cout << b/0 << std::endl;
-    std::cout << a*b << std::endl;
-    std::cout << a.prod_vect(b) << std::endl;
+    color r(1,0,0);
+    color c(0,2,0);
+    //std::cout << a+b << std::endl;
+    //std::cout << a-b << std::endl;
+    //std::cout << a*2 << std::endl;
+    //std::cout << b/2 << std::endl;
+    //std::cout << b/0 << std::endl;
+    //std::cout << a*b << std::endl;
+    //std::cout << a.prod_vect(b) << std::endl;
+    std::cout << r + c << std::endl;
+    std::cout << r*5.0 << std::endl;
 }
 
 void test_objects(){
-    sphere s;
+    sphere s(point(0,0,0),4.0);
     scene sc;
-    sc.list_objects.push_back(&s);
-    sc.list_objects[0]->hit_object();
+    sc.add(&s);
+    std::cout << dynamic_cast<sphere*>(sc.getList()[0])->getCenter() << std::endl;
 }
 
 int main(){
