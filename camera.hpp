@@ -38,7 +38,7 @@ class camera{
             view_width = ratio*view_height;
 
             //Définition du plan de la caméra
-            vec direction = frame_center - origin;
+            vec direction = unit_vector(frame_center - origin);
             vec h;
             if(direction.getX()==0 && direction.getZ()==0){
                 h = unit_vector(direction.prod_vect(vec(1,0,0)));

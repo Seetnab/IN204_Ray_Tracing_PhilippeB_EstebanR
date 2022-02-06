@@ -5,7 +5,7 @@
 #include "camera.hpp"
 #include <cmath>
 
-#define MAX_STEP 100
+#define MAX_STEP 1000
 #define MAX_REFLECTION 5
 
 
@@ -36,7 +36,7 @@ void write_color(std::ofstream &out, color pixel_color) {
 int main(){
     //remove("image.ppm");
     double ratio = 16.0/9.0;
-    int width = 400;
+    int width = 1200;
     int height = (int) width/ratio;
 
     //Création de la scène
@@ -49,7 +49,7 @@ int main(){
     aScene.add(&g);
 
     //Camera
-    camera cam(point(0,1,200),point(0,0,-1),2.0,ratio);
+    camera cam(point(0,0,50),point(0,0,-1),2.0,ratio);
 
     //Rendu de l'image
     std::ofstream ofs("image.ppm", std::ios::out|std::ios::binary);
