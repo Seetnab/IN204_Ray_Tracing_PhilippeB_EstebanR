@@ -88,6 +88,34 @@ class ground: public scene_basic_object{
             return -1.0;
         };
 };
+
+//Définiton de la classe rectangle, qui peut être vue comme un miroir ou une fenêtre 
+class rectangle: public scene_basic_object{
+    private:
+        point origin;
+        vec normal;
+        double width;
+        double height;
+    public:
+        rectangle(){}
+        rectangle(point anOrigin, vec aNormal, double aWidth, double aHeight, color aColor) :scene_basic_object(aColor), origin(anOrigin), normal(aNormal), width(aWidth), height(aHeight){}
+        ~rectangle(){}
+        double hit_object(ray& r, struct hit_position& intersect){
+            double delta = normal*r.getDirection();
+            if(delta!=0){
+                double num = normal*(origin - r.getOrigin());
+                double step = num/delta;
+                point impact = r.move(step);
+                if(impact.getX()>=origin.getX() && impact.getX()<=(origin.getX()+width) && impact.getY()>=origin.getY() && impact.getY()<=(origin.getY()+height)){
+                    intersect.hit_point = r.move(step);
+                    intersect.normal = normal;
+                    intersect.rgb = rgb;
+                    return step;
+                }
+            }
+            return -1.0;
+        }
+}
  
 //Classe regroupant l'ensemble des objets présent sur scène
 class scene{
