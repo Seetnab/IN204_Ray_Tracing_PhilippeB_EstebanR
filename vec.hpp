@@ -93,6 +93,11 @@ typedef triple<double> point;
 //Décrit un vecteur (x,y,z) dans l'espace
 typedef triple<double> vec;
 
+
+vec unit_vector(vec v) {
+    return v / v.norm();
+}
+
 //Surcharge flux de données en écriture pour afficher les triplets
 template<typename T>
 std::ostream& operator <<(std::ostream& theStream, const triple<T>& aTriple)

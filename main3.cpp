@@ -2,9 +2,11 @@
 #include <fstream>
 #include "vec.hpp"
 #include "objects.hpp"
+#include "camera.hpp"
 #include <cmath>
 
-#define MAX_STEP 10000000
+#define MAX_STEP 100
+#define MAX_REFLECTION 5
 
 
 color ray_color(ray& r, scene& aScene) {
@@ -47,28 +49,17 @@ int main(){
     aScene.add(&g);
 
     //Camera
-    double view_height = 2.0;
-    double view_width = ratio*view_height;
-    double focal = 1.0;
-
-    point origin = point(0,0,0);
-    vec horizontal = vec(view_width, 0, 0);
-    vec vertical = vec(0, view_height, 0);
-    point lw_lft_corner = origin - horizontal/2 - vertical/2 - vec(0, 0, focal);
+    camera cam(point(0,1,200),point(0,0,-1),2.0,ratio);
 
     //Rendu de l'image
     std::ofstream ofs("image.ppm", std::ios::out|std::ios::binary);
     ofs << "P3\n" << width << " " << height << "\n255\n";
     for (int j = height-1; j>=0; --j){
-        //std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
         for (int i=0; i<width; ++i){
             double u = double(i) / (width-1);
             double v = double(j) / (height-1);
-            vec dir = (vec) lw_lft_corner + horizontal*u + vertical*v - origin;
-            //std::cout << dir;
-            ray r(origin, dir, 1);
+            ray r = cam.getRay(u,v,MAX_REFLECTION);
             color pixel_color = ray_color(r,aScene);
-            //std::cout << pixel_color;
             write_color(ofs, pixel_color);
         }
     }

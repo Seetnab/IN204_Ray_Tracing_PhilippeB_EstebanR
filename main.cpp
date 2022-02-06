@@ -3,9 +3,6 @@
 #include "vec.hpp"
 #include <cmath>
 
-vec unit_vector(vec v) {
-    return v / v.norm();
-}
 
 color ray_color(const ray& r) {
     vec unit_direction = unit_vector(r.getDirection());
