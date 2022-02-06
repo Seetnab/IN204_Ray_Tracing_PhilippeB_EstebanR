@@ -12,9 +12,10 @@ class camera{
         double width;               //Largeur de la fenêtre capturée par la caméra
         //Données calculées
         double focal_length;
+        vec direction;
     public:
         //Caméra par défaut
-        camera(): origin(0.0,0.0,0.0), frame_center(0.0,0.0,-1.0), height(2.0), width(16.0/9.0*2.0){ focal_length = 1.0;}
+        camera(): origin(0.0,0.0,0.0), frame_center(0.0,0.0,-1.0), height(2.0), width(16.0/9.0*2.0){ vec direction = (frame_center - origin), focal_length = 1.0;}
         //Caméra personnalisée
         camera(point anOrigin, point aFrame_center, double aHeight, double aWidth): origin(anOrigin), frame_center(aFrame_center), 
             height(aHeight), width(aWidth){ vec direction = (frame_center - origin); focal_length = direction.norm(); }

@@ -19,14 +19,14 @@ void test_operator(){
 }
 
 void test_objects(){
-    sphere s(point(0,0,0),4.0);
+    sphere s(point(0,0,0),4.0, color(1.0,0,0));
     scene sc;
     sc.add(&s);
-    std::cout << dynamic_cast<sphere*>(sc.getList()[0])->getCenter() << std::endl;
+    std::cout << dynamic_cast<sphere*>(sc.getList()[0])->getColor() << std::endl;
 }
 
 int main(){
     //test_operator();
-    //test_objects();
+    test_objects();
     return 0;
 }
