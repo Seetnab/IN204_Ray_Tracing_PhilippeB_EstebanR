@@ -23,6 +23,9 @@ color ray_color(ray& r, scene& aScene) {
     if(aScene.hit_list(r,hp,MAX_STEP)>0){
         //Réflection aléatoire d'un rayon sur la surface d'un objet
         ray nr(hp.hit_point, hp.normal + rand_unit_vec(), r.getMax_reflection()-1);
+        if(r.getMax_reflection() == MAX_REFLECTION){
+            return (ray_color(nr,aScene)+hp.rgb)*0.5;
+        }
         return ray_color(nr, aScene)*0.5;
     }
     //Couleur du fond
@@ -36,9 +39,9 @@ void write_color(std::ofstream &out, std::vector<color> image, int height, int w
     double ratio = 1.0/nSamples;
     // Write the translated [0,255] value of each color component.
     for(int i=0; i<height*width; i++){
-        out << (int)(255.999 * sqrt(image[i].getX()*ratio)) << ' '
-            << (int)(255.999 * sqrt(image[i].getY()*ratio)) << ' '
-            << (int)(255.999 * sqrt(image[i].getZ()*ratio)) << '\n';
+        out << (int)(255.999 * image[i].getX()*ratio) << ' '
+            << (int)(255.999 * image[i].getY()*ratio) << ' '
+            << (int)(255.999 * image[i].getZ()*ratio) << '\n';
     }
 }
 
@@ -86,10 +89,10 @@ int main(){
     //Création de la scène
     scene aScene;
     sphere s1(point(0,0,-1),1,color(1,0,0));
-    //sphere s2(point(-1,0,-2),1,color(0,0,1));
+    sphere s2(point(-1,0,-2),1,color(0,0,1));
     ground g(point(0,-1,0),vec(0,1,0),color(0,1,0));
     aScene.add(&s1);
-    //aScene.add(&s2);
+    aScene.add(&s2);
     aScene.add(&g);
 
     //Camera
