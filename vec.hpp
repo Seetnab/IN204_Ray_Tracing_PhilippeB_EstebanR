@@ -93,9 +93,16 @@ typedef triple<double> point;
 //Décrit un vecteur (x,y,z) dans l'espace
 typedef triple<double> vec;
 
+double random_n(){
+    return (double)(rand()) / (double)(RAND_MAX);
+}
 
-vec unit_vector(vec v) {
+vec unit_vec(vec v) {
     return v / v.norm();
+}
+
+vec rand_unit_vec(){
+    return unit_vec(vec(random_n(), random_n(), random_n()));
 }
 
 //Surcharge flux de données en écriture pour afficher les triplets

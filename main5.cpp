@@ -9,29 +9,26 @@
 #include <chrono>
 
 #define MAX_STEP 1000
-#define MAX_REFLECTION 5
-#define NSAMPLES 1
-#define NTHREAD 1
-
-double random_n(){
-    return (double)(rand()) / (double)(RAND_MAX);
-}
+#define MAX_REFLECTION 10
+#define NSAMPLES 100
+#define NTHREAD 8
 
 
 color ray_color(ray& r, scene& aScene) {
     //Couleur des objets dans la scène
-    hit_position hp;
-    if(aScene.hit_list(r,hp,MAX_STEP)>=0){
-        return hp.rgb;
+    if(r.getMax_reflection()<0){
+        return color(0,0,0);
     }
-
+    hit_position hp;
+    if(aScene.hit_list(r,hp,MAX_STEP)>0){
+        //Réflection aléatoire d'un rayon sur la surface d'un objet
+        ray nr(hp.hit_point, hp.normal + rand_unit_vec(), r.getMax_reflection()-1);
+        return ray_color(nr, aScene)*0.5;
+    }
     //Couleur du fond
-    vec unit_direction = unit_vector(r.getDirection());
-    //std::cout << unit_direction;
+    vec unit_direction = unit_vec(r.getDirection());
     auto t = 0.5*(unit_direction.getY() + 1.0);
-    //std::cout << t;
     color c=color(1.0, 1.0, 1.0)*(1.0-t) + color(0.5, 0.7, 1.0)*t;
-    //std::cout << c;
     return c;
 }
 
@@ -39,9 +36,9 @@ void write_color(std::ofstream &out, std::vector<color> image, int height, int w
     double ratio = 1.0/nSamples;
     // Write the translated [0,255] value of each color component.
     for(int i=0; i<height*width; i++){
-        out << (int)(255.999 * image[i].getX()*ratio) << ' '
-            << (int)(255.999 * image[i].getY()*ratio) << ' '
-            << (int)(255.999 * image[i].getZ()*ratio) << '\n';
+        out << (int)(255.999 * sqrt(image[i].getX()*ratio)) << ' '
+            << (int)(255.999 * sqrt(image[i].getY()*ratio)) << ' '
+            << (int)(255.999 * sqrt(image[i].getZ()*ratio)) << '\n';
     }
 }
 
@@ -83,16 +80,16 @@ void render(scene& aScene, int height, int width, camera& cam){
 int main(){
     //remove("image.ppm");
     double ratio = 16.0/9.0;
-    int width = 1200;
+    int width = 400;
     int height = (int) width/ratio;
 
     //Création de la scène
     scene aScene;
-    sphere s1(point(0,0,-1),0.5,color(1,0,0));
-    sphere s2(point(-1,0,-2),0.5,color(0,0,1));
+    sphere s1(point(0,0,-1),1,color(1,0,0));
+    //sphere s2(point(-1,0,-2),1,color(0,0,1));
     ground g(point(0,-1,0),vec(0,1,0),color(0,1,0));
     aScene.add(&s1);
-    aScene.add(&s2);
+    //aScene.add(&s2);
     aScene.add(&g);
 
     //Camera

@@ -22,7 +22,7 @@ color ray_color(ray& r, scene& aScene) {
     }
 
     //Couleur du fond
-    vec unit_direction = unit_vector(r.getDirection());
+    vec unit_direction = unit_vec(r.getDirection());
     //std::cout << unit_direction;
     auto t = 0.5*(unit_direction.getY() + 1.0);
     //std::cout << t;

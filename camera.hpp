@@ -38,15 +38,15 @@ class camera{
             view_width = ratio*view_height;
 
             //Définition du plan de la caméra
-            vec direction = unit_vector(frame_center - origin);
+            vec direction = unit_vec(frame_center - origin);
             vec h;
             if(direction.getX()==0 && direction.getZ()==0){
-                h = unit_vector(direction.prod_vect(vec(1,0,0)));
+                h = unit_vec(direction.prod_vect(vec(1,0,0)));
                 std::cout << h << std::endl;
             }else{
-                h = unit_vector(direction.prod_vect(vec(0,1,0)));
+                h = unit_vec(direction.prod_vect(vec(0,1,0)));
             }
-            vec v = unit_vector(h.prod_vect(direction));
+            vec v = unit_vec(h.prod_vect(direction));
             //Calcul de l'espace limité de la caméra
             focal_length = direction.norm(); 
             horizontal = h*view_width;
