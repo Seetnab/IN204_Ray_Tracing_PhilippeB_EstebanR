@@ -105,6 +105,10 @@ vec rand_unit_vec(){
     return unit_vec(vec(random_n(), random_n(), random_n()));
 }
 
+color color_multiply(color c1, color c2){
+    return color(c1.getX()*c2.getX(), c1.getY()*c2.getY(), c1.getZ()*c2.getZ());
+}
+
 //Surcharge flux de données en écriture pour afficher les triplets
 template<typename T>
 std::ostream& operator <<(std::ostream& theStream, const triple<T>& aTriple)

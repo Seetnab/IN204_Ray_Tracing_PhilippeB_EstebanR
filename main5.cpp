@@ -3,36 +3,39 @@
 #include "vec.hpp"
 #include "objects.hpp"
 #include "camera.hpp"
+#include "light.hpp"
 #include <omp.h>
 #include <cmath>
 #include <vector>
 #include <chrono>
 
-#define MAX_STEP 1000
-#define MAX_REFLECTION 10
-#define NSAMPLES 100
+#define MAX_STEP 50
+#define MAX_REFLECTION 1
+#define NSAMPLES 1
 #define NTHREAD 8
 
 
-color ray_color(ray& r, scene& aScene) {
+color ray_color(ray& r, scene& aScene, scene_lights lights) {
     //Couleur des objets dans la scène
-    if(r.getMax_reflection()<0){
-        return color(0,0,0);
-    }
     hit_position hp;
-    if(aScene.hit_list(r,hp,MAX_STEP)>0){
+    if(aScene.hit_list(r,hp,MAX_STEP)>0 && r.getMax_reflection() >= 0){
         //Réflection aléatoire d'un rayon sur la surface d'un objet
-        ray nr(hp.hit_point, hp.normal + rand_unit_vec(), r.getMax_reflection()-1);
-        if(r.getMax_reflection() == MAX_REFLECTION){
-            return (ray_color(nr,aScene)+hp.rgb)*0.5;
-        }
-        return ray_color(nr, aScene)*0.5;
+        vec ndirection = hp.normal + rand_unit_vec();
+        ray nr(hp.hit_point + ndirection*0.001, ndirection, r.getMax_reflection()-1);
+        //if(r.getMax_reflection() == MAX_REFLECTION){
+        //    color c = lights.hit_lights(hp.hit_point, hp.rgb, aScene, MAX_STEP);
+        //    return color_multiply(ray_color(nr,aScene,lights),c);
+        //}
+        color c = lights.hit_lights(hp, aScene, MAX_STEP);   
+        return color_multiply(ray_color(nr,aScene,lights),c);
+
+    }else{
+        //Couleur du fond
+        vec unit_direction = unit_vec(r.getDirection());
+        auto t = 0.5*(unit_direction.getY() + 1.0);
+        color c=color(1.0, 1.0, 1.0)*(1.0-t) + color(0.5, 0.7, 1.0)*t;
+        return c;
     }
-    //Couleur du fond
-    vec unit_direction = unit_vec(r.getDirection());
-    auto t = 0.5*(unit_direction.getY() + 1.0);
-    color c=color(1.0, 1.0, 1.0)*(1.0-t) + color(0.5, 0.7, 1.0)*t;
-    return c;
 }
 
 void write_color(std::ofstream &out, std::vector<color> image, int height, int width, int nSamples) {
@@ -45,7 +48,7 @@ void write_color(std::ofstream &out, std::vector<color> image, int height, int w
     }
 }
 
-void render(scene& aScene, int height, int width, camera& cam){
+void render(scene& aScene, scene_lights lights, int height, int width, camera& cam){
     //Rendu de l'image
     std::ofstream ofs("image.ppm", std::ios::out|std::ios::binary);
     std::vector<color> image(height*width);
@@ -60,13 +63,13 @@ void render(scene& aScene, int height, int width, camera& cam){
                     double u = double(i + random_n()) / (width-1);
                     double v = double(j + random_n()) / (height-1);
                     ray r = cam.getRay(u,v,MAX_REFLECTION);
-                    pixel_color = pixel_color + ray_color(r,aScene);
+                    pixel_color = pixel_color + ray_color(r,aScene, lights);
                 }
             }else{
                 double u = double(i) / (width-1);
                 double v = double(j) / (height-1);
                 ray r = cam.getRay(u,v,MAX_REFLECTION);
-                pixel_color = ray_color(r,aScene);
+                pixel_color = ray_color(r,aScene, lights);
             }
             //std::cout << pixel_color << std::endl;
             image[i+(height-1-j)*width] = pixel_color; 
@@ -83,7 +86,7 @@ void render(scene& aScene, int height, int width, camera& cam){
 int main(){
     //remove("image.ppm");
     double ratio = 16.0/9.0;
-    int width = 400;
+    int width = 1200;
     int height = (int) width/ratio;
 
     //Création de la scène
@@ -95,12 +98,16 @@ int main(){
     aScene.add(&s2);
     aScene.add(&g);
 
+    scene_lights lights;
+    light l1(point(0,50,-1), color(1,1,1),1);
+    lights.add(&l1);
+
     //Camera
     camera cam(point(0,0,1),point(0,0,-1),2.0,ratio);
 
     //Rendu de l'image
     
-    render(aScene, height, width, cam);
+    render(aScene, lights, height, width, cam);
     //std::cerr << "\nDone.\n";
     return 0;
 }
