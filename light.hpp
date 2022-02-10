@@ -6,15 +6,25 @@
 # include "vec.hpp"
 # include "objects.hpp"
 
+
 class light{
-    private:
-        point origin;
+    protected:
         color rgb;
         double intensity;
     public:
         light(){}
-        light(point anOrigin, color c, double i): origin(anOrigin), rgb(c) , intensity(i){}
+        light(color c, double i): rgb(c), intensity(i){}
         ~light(){}
+        virtual color hit_light(hit_position& hp, scene aScene, int max)=0;
+};
+
+class point_light: public light{
+    private:
+        point origin;
+    public:
+        point_light(){}
+        point_light(point o, color c, double i): light(c,i), origin(o){}
+        ~point_light(){}
         color getColor(){
             return rgb;
         }
@@ -23,6 +33,54 @@ class light{
         }
         double getIntensity(){
             return intensity;
+        }
+        color hit_light(hit_position& hp, scene aScene, int max){
+            color c;
+            vec light_direction = unit_vec(origin - hp.hit_point);
+            double distance = (origin - hp.hit_point).norm();
+            ray r(hp.hit_point + light_direction*0.01, light_direction, 0);
+            hit_position nhp;
+            double step = aScene.hit_list(r, nhp, max);
+            if(step<0 || step>distance){
+                double lambert = r.getDirection()*hp.normal;
+                double dist_dependency = 1/(1+distance*(1-intensity));
+                c = color_multiply(hp.rgb,rgb)*dist_dependency*lambert;
+            }else{
+                c = color(0,0,0);
+            }
+            return c;
+        }
+};
+
+
+class ambient_light: public light{
+    private:
+        vec direction;
+    public:
+        ambient_light(){}
+        ambient_light(vec aDirection, color c, double i): light(c,i), direction(unit_vec(aDirection)){}
+        ~ambient_light(){}
+        color getColor(){
+            return rgb;
+        }
+        point getDirection(){
+            return direction;
+        }
+        double getIntensity(){
+            return intensity;
+        }
+        color hit_light(hit_position& hp, scene aScene, int max){
+            color c;
+            ray r(hp.hit_point + hp.normal*0.001, direction*(-1), 0);
+            hit_position nhp;
+            if(aScene.hit_list(r, nhp, max)<0){
+                double lambert = r.getDirection()*hp.normal;
+                //std::cout << lambert << std::endl;
+                c = color_multiply(hp.rgb,rgb)*lambert;
+            }else{
+                c = color(0,0,0);
+            }
+            return c;
         }
 };
 
@@ -38,19 +96,13 @@ class scene_lights{
         void clear(){
             list_lights.clear();
         }
-        color hit_lights(hit_position hp, scene aScene, int max){
-            color c=hp.rgb;
+        void hit_lights(hit_position& hp, scene aScene, int max){
+            color c;
             for(int i=0; i<(int) list_lights.size(); i++){
-                vec light_direction = unit_vec(list_lights[i]->getOrigin() - hp.hit_point);
-                ray r(hp.hit_point + hp.normal*0.001, light_direction, 0);
-                hit_position nhp;
-                if(aScene.hit_list(r, nhp, max)>0){
-                    c = c*0.5;
-                }else{
-                    c = (c +list_lights[i]->getColor()*list_lights[i]->getIntensity())*0.5;
-                }
+                c = c + list_lights[i]->hit_light(hp,aScene,max);
+                //std::cout << i << std::endl;
             }
-            return c;
+            hp.rgb = c;
         }
 
 };

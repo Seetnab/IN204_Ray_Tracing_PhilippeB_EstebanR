@@ -112,7 +112,7 @@ class scene{
             double step = max_step;
             for(int i=0; i<(int)list_objects.size();i++){
                 double res = list_objects[i]->hit_object(r,tmp);
-                if(res < step && res>=0){
+                if(res < step && res>0){
                     intersect = tmp;
                     step = res;
                 }

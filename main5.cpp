@@ -26,8 +26,9 @@ color ray_color(ray& r, scene& aScene, scene_lights lights) {
         //    color c = lights.hit_lights(hp.hit_point, hp.rgb, aScene, MAX_STEP);
         //    return color_multiply(ray_color(nr,aScene,lights),c);
         //}
-        color c = lights.hit_lights(hp, aScene, MAX_STEP);   
-        return color_multiply(ray_color(nr,aScene,lights),c);
+        lights.hit_lights(hp, aScene, MAX_STEP);   
+        return hp.rgb;
+        //return color_multiply(ray_color(nr,aScene,lights),c);
 
     }else{
         //Couleur du fond
@@ -94,13 +95,15 @@ int main(){
     sphere s1(point(0,0,-1),1,color(1,0,0));
     sphere s2(point(-1,0,-2),1,color(0,0,1));
     ground g(point(0,-1,0),vec(0,1,0),color(0,1,0));
-    aScene.add(&s1);
+    //aScene.add(&s1);
     aScene.add(&s2);
     aScene.add(&g);
 
     scene_lights lights;
-    light l1(point(0,50,-1), color(1,1,1),1);
-    lights.add(&l1);
+    ambient_light l1(vec(-1,-0.1,0), color(1,1,1),1);
+    point_light l2(point(-2,0,-1),color(1,1,1),1);
+    lights.add(&l2);
+    //lights.add(&l1);
 
     //Camera
     camera cam(point(0,0,1),point(0,0,-1),2.0,ratio);
