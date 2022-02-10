@@ -102,7 +102,11 @@ vec unit_vec(vec v) {
 }
 
 vec rand_unit_vec(){
-    return unit_vec(vec(random_n(), random_n(), random_n()));
+    vec v;
+    while(v.norm()>=1.0){
+        v = vec(random_n(),random_n(),random_n());
+    }
+    return v;
 }
 
 color color_multiply(color c1, color c2){

@@ -15,7 +15,7 @@ class light{
         light(){}
         light(color c, double i): rgb(c), intensity(i){}
         ~light(){}
-        virtual color hit_light(hit_position& hp, scene aScene, int max)=0;
+        virtual color hit_light(hit_position hp, scene aScene, int max)=0;
 };
 
 class point_light: public light{
@@ -34,7 +34,7 @@ class point_light: public light{
         double getIntensity(){
             return intensity;
         }
-        color hit_light(hit_position& hp, scene aScene, int max){
+        color hit_light(hit_position hp, scene aScene, int max){
             color c;
             vec light_direction = unit_vec(origin - hp.hit_point);
             double distance = (origin - hp.hit_point).norm();
@@ -42,9 +42,9 @@ class point_light: public light{
             hit_position nhp;
             double step = aScene.hit_list(r, nhp, max);
             if(step<0 || step>distance){
-                double lambert = r.getDirection()*hp.normal;
-                double dist_dependency = 1/(1+distance*(1-intensity));
-                c = color_multiply(hp.rgb,rgb)*dist_dependency*lambert;
+                double lambert = std::max(r.getDirection()*hp.normal,0.0);
+                double dist_dependency = 1/(1+distance);
+                c = color_multiply(hp.rgb,rgb)*dist_dependency*lambert*intensity;
             }else{
                 c = color(0,0,0);
             }
@@ -69,14 +69,14 @@ class ambient_light: public light{
         double getIntensity(){
             return intensity;
         }
-        color hit_light(hit_position& hp, scene aScene, int max){
+        color hit_light(hit_position hp, scene aScene, int max){
             color c;
             ray r(hp.hit_point + hp.normal*0.001, direction*(-1), 0);
             hit_position nhp;
             if(aScene.hit_list(r, nhp, max)<0){
-                double lambert = r.getDirection()*hp.normal;
-                //std::cout << lambert << std::endl;
-                c = color_multiply(hp.rgb,rgb)*lambert;
+                double lambert = std::max(r.getDirection()*hp.normal,0.0);
+                c = color_multiply(hp.rgb,rgb)*lambert*intensity;
+
             }else{
                 c = color(0,0,0);
             }
