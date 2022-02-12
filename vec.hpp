@@ -93,21 +93,6 @@ typedef triple<double> point;
 //Décrit un vecteur (x,y,z) dans l'espace
 typedef triple<double> vec;
 
-double random_n(){
-    return (double)(rand()) / (double)(RAND_MAX);
-}
-
-vec unit_vec(vec v) {
-    return v / v.norm();
-}
-
-vec rand_unit_vec(){
-    vec v;
-    while(v.norm()>=1.0){
-        v = vec(random_n(),random_n(),random_n());
-    }
-    return v;
-}
 
 color color_multiply(color c1, color c2){
     return color(c1.getX()*c2.getX(), c1.getY()*c2.getY(), c1.getZ()*c2.getZ());
@@ -119,6 +104,23 @@ std::ostream& operator <<(std::ostream& theStream, const triple<T>& aTriple)
 {
     theStream << "(" << aTriple.getX() << "," << aTriple.getY() << "," << aTriple.getZ() << ")"; 
     return theStream;
+}
+
+
+double random_n(double min, double max){
+    return min + (max-min)*(double)(rand()) / (double)(RAND_MAX);
+}
+
+vec unit_vec(vec v) {
+    return v / v.norm();
+}
+
+vec rand_unit_vec(){
+    vec v(1,1,1);
+    while(v.norm()>=1.0){
+        v = vec(random_n(-1,1),random_n(-1,1),random_n(-1,1));
+    }
+    return unit_vec(v);
 }
 
 

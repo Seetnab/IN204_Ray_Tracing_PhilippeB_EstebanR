@@ -41,12 +41,13 @@ class point_light: public light{
             ray r(hp.hit_point + light_direction*0.01, light_direction, 0);
             hit_position nhp;
             double step = aScene.hit_list(r, nhp, max);
-            if(step<0 || step>distance){
+            if(step<=0 || step>=distance){
                 double lambert = std::max(r.getDirection()*hp.normal,0.0);
                 double dist_dependency = 1/(1+distance);
                 c = color_multiply(hp.rgb,rgb)*dist_dependency*lambert*intensity;
             }else{
-                c = color(0,0,0);
+                double dist_dependency = 1/(1+step*step);
+                c = color_multiply(hp.rgb,color(1,1,1)-rgb)*(1-dist_dependency)*(1-intensity);
             }
             return c;
         }
@@ -73,12 +74,14 @@ class ambient_light: public light{
             color c;
             ray r(hp.hit_point + hp.normal*0.001, direction*(-1), 0);
             hit_position nhp;
-            if(aScene.hit_list(r, nhp, max)<0){
+            double step = aScene.hit_list(r, nhp, max);
+            if(step<0){
                 double lambert = std::max(r.getDirection()*hp.normal,0.0);
                 c = color_multiply(hp.rgb,rgb)*lambert*intensity;
 
             }else{
-                c = color(0,0,0);
+                double dist_dependency = 1/(1+step*0.1);
+                c = color_multiply(hp.rgb,color(1,1,1)-rgb)*(1-dist_dependency)*(1-intensity);
             }
             return c;
         }

@@ -12,17 +12,18 @@
 #define MAX_STEP 50
 #define MAX_REFLECTION 10
 #define NSAMPLES 1
-#define NTHREAD 8
+#define NTHREAD 16
 
 
 color ray_color(ray& r, scene& aScene, scene_lights lights, ambient_light l1) {
     //Couleur des objets dans la scène
     hit_position hp;
-    if(aScene.hit_list(r,hp,MAX_STEP)>0.01 && r.getMax_reflection() >= 0){
+    if(aScene.hit_list(r,hp,MAX_STEP)>0.001 && r.getMax_reflection() >= 0){
         //Réflection aléatoire d'un rayon sur la surface d'un objet
-        vec ndirection = hp.normal + rand_unit_vec();
+        vec ndirection = unit_vec(hp.normal + rand_unit_vec());
         ray nr(hp.hit_point, ndirection, r.getMax_reflection()-1);
         lights.hit_lights(hp, aScene, MAX_STEP);   
+        //return hp.rgb;
         return color_multiply(ray_color(nr,aScene,lights,l1),hp.rgb);
     }else{
         //Couleur du fond
@@ -55,8 +56,8 @@ void render(scene& aScene, scene_lights lights, int height, int width, camera& c
             color pixel_color;
             if(NSAMPLES !=1){
                 for(int k=0; k<NSAMPLES; k++){
-                    double u = double(i + random_n()) / (width-1);
-                    double v = double(j + random_n()) / (height-1);
+                    double u = double(i + random_n(0,1)) / (width-1);
+                    double v = double(j + random_n(0,1)) / (height-1);
                     ray r = cam.getRay(u,v,MAX_REFLECTION);
                     pixel_color = pixel_color + ray_color(r,aScene, lights,l1);
                 }
@@ -86,18 +87,18 @@ int main(){
 
     //Création de la scène
     scene aScene;
-    sphere s1(point(0,0,-1),1,color(0.5,0.4,0.2));
-    sphere s2(point(-1,0,-2),1,color(0.1,0.6,0.2));
-    ground g(point(0,-1,0),vec(0,1,0),color(0.1,0.8,0.1));
+    sphere s1(point(0,0,-1),1,color(1,0,0));
+    sphere s2(point(-1,0,-2),1,color(0,0,1));
+    ground g(point(0,-1,0),vec(0,1,0),color(0.1,1,0.1));
     aScene.add(&s1);
     aScene.add(&s2);
     aScene.add(&g);
 
     scene_lights lights;
     ambient_light l1(vec(-1,-0.1,0), color(1,1,1),1);
-    point_light l2(point(-2,-0.99,-1),color(1,1,1),1);
-    lights.add(&l2);
+    point_light l2(point(-2,-0.99,-1),color(1,1,1),0.9);
     lights.add(&l1);
+    lights.add(&l2);
 
     //Camera
     camera cam(point(0,0,1),point(0,0,-1),2.0,ratio);
