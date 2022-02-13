@@ -44,7 +44,55 @@ class point_light: public light{
             ray r(hp.hit_point + light_direction*0.01, light_direction, 0);
             hit_position nhp;
             double step = aScene.hit_list(r, nhp, max);
+            while(step > 0 && nhp.mat->getName()=="glass"){
+                ray nr(r.getOrigin() + r.move(step+0.001), r.getDirection(), r.getMax_reflection());
+                step = aScene.hit_list(nr, nhp, max) + 0.001;
+                r= nr;
+            }
             if(step<=0 || step>=distance){
+                double lambert = std::max(r.getDirection()*hp.normal,0.0);
+                double dist_dependency = 1/(1+distance);
+                c = color_multiply(hp.rgb,rgb)*dist_dependency*lambert*intensity;
+            }else{
+                c = color_multiply(hp.rgb,color(1,1,1)-rgb)*(1-intensity);
+            }
+            return c;
+        }
+};
+
+class sphere_light: public light{
+    private:
+        sphere spherical;
+    public:
+        sphere_light(){}
+        sphere_light(sphere s, color c, double i): light(c,i), spherical(s){}
+        ~sphere_light(){}
+        color getColor(){
+            return rgb;
+        }
+        point getCenter(){
+            return spherical.getCenter();
+        }
+        double getRadius(){
+            return spherical.getRadius();
+        }
+        double getIntensity(){
+            return intensity;
+        }
+        color hit_light(hit_position hp, scene aScene, int max){
+            color c;
+            vec light_direction = unit_vec(spherical.getCenter() - hp.hit_point);
+            double distance = (spherical.getCenter() - hp.hit_point).norm()-spherical.getRadius()-0.01;
+            ray r(hp.hit_point + light_direction*0.001, light_direction, 0);
+            hit_position nhp;
+            double step = aScene.hit_list(r, nhp, max);
+            //std::cout << step << " " << distance << std::endl;
+            while(step > 0 && nhp.mat->getName()=="glass"){
+                ray nr(r.getOrigin() + r.move(step+0.001), r.getDirection(), r.getMax_reflection());
+                step = aScene.hit_list(nr, nhp, max) + 0.001;
+                r= nr;
+            }
+            if(step<=0 || step>distance){
                 double lambert = std::max(r.getDirection()*hp.normal,0.0);
                 double dist_dependency = 1/(1+distance);
                 c = color_multiply(hp.rgb,rgb)*dist_dependency*lambert*intensity;
@@ -77,14 +125,16 @@ class ambient_light: public light{
             ray r(hp.hit_point + hp.normal*0.001, direction*(-1), 0);
             hit_position nhp;
             double step = aScene.hit_list(r, nhp, max);
+            while(step > 0 && nhp.mat->getName()=="glass"){
+                ray nr(r.getOrigin() + r.move(step+0.001), r.getDirection(), r.getMax_reflection());
+                step = aScene.hit_list(nr, nhp, max) + 0.001;
+                r= nr;
+            }
             if(step<0){
                 double lambert = std::max(r.getDirection()*hp.normal,0.0);
                 c = color_multiply(hp.rgb,rgb)*lambert*intensity;
 
             }else{
-                if(nhp.mat->getName()=="glass"){
-                    return hp.rgb;
-                }
                 c = color_multiply(hp.rgb,color(1,1,1)-rgb)*(1-intensity);
             }
             return c;

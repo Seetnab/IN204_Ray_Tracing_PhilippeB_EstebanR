@@ -29,16 +29,20 @@ color ray_color(ray& r, scene& aScene, scene_lights lights, ambient_light sky) {
         ray refracted_ray;
         hp.mat->ray_interaction(r, hp, reflected_ray, refracted_ray);
         //std::cout << reflected_ray.getDirection() << std::endl;
+        if(hp.mat->getName()=="light_material"){
+            return hp.rgb;
+        }
         if(hp.mat->getName()=="mirror" && reflected_ray.getDirection()*hp.normal>0){
             return ray_color(reflected_ray, aScene, lights, sky);
-        }
-        if(hp.mat->getName()=="glass"){
-            return ray_color(refracted_ray,aScene,lights,sky);
         }
         lights.hit_lights(hp, aScene, MAX_STEP);   
         color c=hp.rgb;
         if(refracted_ray.getDirection().norm()>0.01){
-            c = color_multiply(ray_color(refracted_ray, aScene,lights, sky),c);
+            c = ray_color(refracted_ray, aScene,lights, sky);
+            if(reflected_ray.getDirection().norm()>0.01){
+                return (color_multiply(ray_color(reflected_ray,aScene,lights,sky),hp.rgb)+c)*0.5;
+            }
+            return c;
         }if(reflected_ray.getDirection().norm()>0.01){
             return (color_multiply(ray_color(reflected_ray,aScene,lights,sky),hp.rgb)+c)*0.5;
         }
@@ -111,26 +115,32 @@ int main(){
     metal me;
     mirror mi;
     glass gl;
+    light_material lm;
     sphere s1(point(3,0,-1),1,color(1,0,0),&me);
-    sphere s2(point(-3,0,-2),1,color(0,0,1),&gl);
-    sphere s3(point(-4.5,0,-4.5),1,color(0,0,1),&d);
-    ground g(point(0,-1,0),vec(0,1,0),color(0.1,0.8,0.1),&dd);
-    rectangle r(point(-2.5,-1,-5),vec(0,0,1),5,11,color(0.5,0.5,0.5),&mi);
+    sphere s2(point(-3,0,-2),1,color(1,1,1),&me);
+    sphere s3(point(-4.5,0,-5),1,color(0,0,1),&d);
+    sphere s4(point(0,0,-7),1,color(0,0,1),&d);
+    sphere s5(point(0,-0.6,-1),0.4,color(1,1,1),&lm);
+    ground g(point(0,-1,0),vec(0,1,0),color(0.1,0.8,0.1),&d);
+    rectangle r(point(-2.5,-1,-5.5),vec(0,0,1),5,5,color(0.5,0.5,0.5),&mi);
     aScene.add(&s1);
     aScene.add(&s2);
     aScene.add(&s3);
+    aScene.add(&s4);
+    aScene.add(&s5);
     aScene.add(&g);
     aScene.add(&r);
 
+
     scene_lights lights;
-    ambient_light l1(vec(-1,-0.1,0), color(1,1,1),1);
-    ambient_light sky(vec(0,-1,0), color(1,1,1),1);
-    point_light l2(point(-2,2,-1),color(1,1,1),0.9);
-    point_light l3(point(0,-0.99,-2),color(1,1,1),0.9);
+    ambient_light sky(vec(0,-1,0), color(1,1,1),0);
+    point_light l2(point(-2,-0.99,-1),color(1,1,1),0.9);
+    point_light l3(point(0,1,-2),color(1,1,1),0.9);
+    sphere_light sl(s5, color(1,1,1), 1);
     lights.add(&sky);
-    //lights.add(&l1);
-    //lights.add(&l2);
-    //lights.add(&l3);
+    lights.add(&l2);
+    lights.add(&l3);
+    lights.add(&sl);
 
     //Camera
     camera cam(point(0,0.5,1),point(0,0,-1),2.0,ratio);
