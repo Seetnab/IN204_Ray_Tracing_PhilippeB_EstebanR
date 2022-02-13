@@ -15,7 +15,7 @@
 #define NTHREAD 16
 
 
-color ray_color(ray& r, scene& aScene, scene_lights lights, ambient_light l1) {
+color ray_color(ray& r, scene& aScene, scene_lights lights, ambient_light sky) {
     //Couleur des objets dans la scène
     hit_position hp;
     if(aScene.hit_list(r,hp,MAX_STEP)>0.001 && r.getMax_reflection() >= 0){
@@ -24,12 +24,12 @@ color ray_color(ray& r, scene& aScene, scene_lights lights, ambient_light l1) {
         ray nr(hp.hit_point, ndirection, r.getMax_reflection()-1);
         lights.hit_lights(hp, aScene, MAX_STEP);   
         //return hp.rgb;
-        return color_multiply(ray_color(nr,aScene,lights,l1),hp.rgb);
+        return color_multiply(ray_color(nr,aScene,lights,sky),hp.rgb);
     }else{
         //Couleur du fond
         vec unit_direction = unit_vec(r.getDirection());
-        auto t = 0.5*(unit_direction*l1.getDirection() + 1.0);
-        color c=l1.getColor()*(1.0-t) + color_multiply(color(0.5, 0.7, 1.0)*t, l1.getColor()*t);
+        auto t = 0.5*(unit_direction*sky.getDirection() + 1.0);
+        color c=sky.getColor()*(1.0-t) + color_multiply(color(0.5, 0.7, 1.0)*t, sky.getColor()*t);
         return c;
     }
 }
@@ -44,7 +44,7 @@ void write_color(std::ofstream &out, std::vector<color> image, int height, int w
     }
 }
 
-void render(scene& aScene, scene_lights lights, int height, int width, camera& cam, ambient_light l1){
+void render(scene& aScene, scene_lights lights, int height, int width, camera& cam, ambient_light sky){
     //Rendu de l'image
     std::ofstream ofs("image.ppm", std::ios::out|std::ios::binary);
     std::vector<color> image(height*width);
@@ -59,13 +59,13 @@ void render(scene& aScene, scene_lights lights, int height, int width, camera& c
                     double u = double(i + random_n(0,1)) / (width-1);
                     double v = double(j + random_n(0,1)) / (height-1);
                     ray r = cam.getRay(u,v,MAX_REFLECTION);
-                    pixel_color = pixel_color + ray_color(r,aScene, lights,l1);
+                    pixel_color = pixel_color + ray_color(r,aScene, lights,sky);
                 }
             }else{
                 double u = double(i) / (width-1);
                 double v = double(j) / (height-1);
                 ray r = cam.getRay(u,v,MAX_REFLECTION);
-                pixel_color = ray_color(r,aScene, lights, l1);
+                pixel_color = ray_color(r,aScene, lights, sky);
             }
             //std::cout << pixel_color << std::endl;
             image[i+(height-1-j)*width] = pixel_color; 
@@ -95,9 +95,9 @@ int main(){
     aScene.add(&g);
 
     scene_lights lights;
-    ambient_light l1(vec(-1,-0.1,0), color(1,1,1),1);
+    ambient_light sky(vec(-1,-0.1,0), color(1,0.5,1),1);
     point_light l2(point(-2,-0.99,-1),color(1,1,1),0.9);
-    lights.add(&l1);
+    lights.add(&sky);
     lights.add(&l2);
 
     //Camera
@@ -105,7 +105,7 @@ int main(){
 
     //Rendu de l'image
     
-    render(aScene, lights, height, width, cam, l1);
+    render(aScene, lights, height, width, cam, sky);
     //std::cerr << "\nDone.\n";
     return 0;
 }

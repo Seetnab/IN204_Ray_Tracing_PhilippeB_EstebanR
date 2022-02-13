@@ -5,6 +5,9 @@
 # include <vector>
 # include "vec.hpp"
 # include "objects.hpp"
+# include "material.hpp"
+//# include "hit.hpp"
+
 
 
 class light{
@@ -46,8 +49,7 @@ class point_light: public light{
                 double dist_dependency = 1/(1+distance);
                 c = color_multiply(hp.rgb,rgb)*dist_dependency*lambert*intensity;
             }else{
-                double dist_dependency = 1/(1+step*step);
-                c = color_multiply(hp.rgb,color(1,1,1)-rgb)*(1-dist_dependency)*(1-intensity);
+                c = color_multiply(hp.rgb,color(1,1,1)-rgb)*(1-intensity);
             }
             return c;
         }
@@ -80,8 +82,10 @@ class ambient_light: public light{
                 c = color_multiply(hp.rgb,rgb)*lambert*intensity;
 
             }else{
-                double dist_dependency = 1/(1+step*0.1);
-                c = color_multiply(hp.rgb,color(1,1,1)-rgb)*(1-dist_dependency)*(1-intensity);
+                if(nhp.mat->getName()=="glass"){
+                    return hp.rgb;
+                }
+                c = color_multiply(hp.rgb,color(1,1,1)-rgb)*(1-intensity);
             }
             return c;
         }
@@ -103,9 +107,8 @@ class scene_lights{
             color c;
             for(int i=0; i<(int) list_lights.size(); i++){
                 c = c + list_lights[i]->hit_light(hp,aScene,max);
-                //std::cout << i << std::endl;
             }
-            hp.rgb = c;
+            hp.rgb = color_max(c);
         }
 
 };

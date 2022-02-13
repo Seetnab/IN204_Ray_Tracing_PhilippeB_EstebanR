@@ -7,12 +7,13 @@
 # include "vec.hpp"
 
 
+class material; 
 
-//Structure contenant le point d'intersection entre un objet et un rayon, et la normal au point de collision
 struct hit_position{
     point hit_point;
     vec normal;
     color rgb;
+    material* mat;
 };
 
 //Classe mère contenant les méthodes et attributs commun à tous les objets de la scène
@@ -33,10 +34,12 @@ class sphere: public scene_basic_object{
     private:
         point center;
         double radius;
+        material* mat;
     public:
         sphere(){}
         //Mettre le constructeur de la classe mère en premier pour faire appel au bon constructeur
-        sphere(point aCenter, double aRadius, color aColor) :scene_basic_object(aColor), center(aCenter), radius(aRadius){}
+        sphere(point aCenter, double aRadius, color aColor,material* m) :
+            scene_basic_object(aColor), center(aCenter), radius(aRadius), mat(m){}
         ~sphere(){}
         point getCenter() const{
             return center;
@@ -58,6 +61,7 @@ class sphere: public scene_basic_object{
                 intersect.hit_point = r.move(step);
                 intersect.normal = (intersect.hit_point - center)/radius;
                 intersect.rgb = rgb;
+                intersect.mat = mat;
                 return step;
             }
             return -1.0;
@@ -69,10 +73,12 @@ class ground: public scene_basic_object{
     private:
         point origin;
         vec normal;
+        material* mat;
     public:
         ground(){}
         //Mettre le constructeur de la classe mère en premier pour faire appel au bon constructeur
-        ground(point anOrigin, vec aNormal, color aColor) :scene_basic_object(aColor),origin(anOrigin), normal(aNormal){}
+        ground(point anOrigin, vec aNormal, color aColor, material* m) :
+            scene_basic_object(aColor),origin(anOrigin), normal(aNormal), mat(m){}
         ~ground(){}
         //Renvoi step, qui est la distance entre le point d'origine du rayon et le point d'impact
         double hit_object(ray& r, struct hit_position& intersect){
@@ -83,6 +89,7 @@ class ground: public scene_basic_object{
                 intersect.hit_point = r.move(step);
                 intersect.normal = normal;
                 intersect.rgb = rgb;
+                intersect.mat = mat;
                 return step;
             }
             return -1.0;
@@ -96,9 +103,11 @@ class rectangle: public scene_basic_object{
         vec normal;
         double width;
         double height;
+        material* mat;
     public:
         rectangle(){}
-        rectangle(point anOrigin, vec aNormal, double aWidth, double aHeight, color aColor) :scene_basic_object(aColor), origin(anOrigin), normal(aNormal), width(aWidth), height(aHeight){}
+        rectangle(point anOrigin, vec aNormal, double aWidth, double aHeight, color aColor, material* m) :
+            scene_basic_object(aColor), origin(anOrigin), normal(aNormal), width(aWidth), height(aHeight), mat(m){}
         ~rectangle(){}
         double hit_object(ray& r, struct hit_position& intersect){
             double delta = normal*r.getDirection();
@@ -110,12 +119,13 @@ class rectangle: public scene_basic_object{
                     intersect.hit_point = r.move(step);
                     intersect.normal = normal;
                     intersect.rgb = rgb;
+                    intersect.mat = mat;
                     return step;
                 }
             }
             return -1.0;
         }
-}
+};
  
 //Classe regroupant l'ensemble des objets présent sur scène
 class scene{
