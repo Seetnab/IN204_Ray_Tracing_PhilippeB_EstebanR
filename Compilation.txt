@@ -1,0 +1,11 @@
+Commande pour la compilation: 
+  
+    g++ -Wall -fopenmp main.cpp -o main.exe
+    
+Execution du programme :
+
+    ./main.exe
+    
+Le choix des moteurs de rendu se fait après le lancement du programme via le terminal, en entrant une valeur comprise entre 1 et 5, chacune correspondant à un moteur différent.
+
+Le programme créé une image qui s'appelle "image.ppm" dans le répertoire local.
