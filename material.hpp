@@ -82,6 +82,7 @@ class glass: public material{
         double glass_index;
     public:
         glass(): material("glass",0,1), glass_index(1.5){}
+        glass(double r, double t): material("glass",r,t), glass_index(1.5){}
         ~glass(){}
         void ray_interaction(ray& r, hit_position& hp, ray& reflected_ray, ray& refracted_ray){
             double cos = hp.normal*r.getDirection();
@@ -95,10 +96,9 @@ class glass: public material{
                 refracted_perp = (r.getDirection()+hp.normal*cos)*(1.0/glass_index);
             }
             double para = r.getDirection().norm()*r.getDirection().norm()-refracted_perp.norm()*refracted_perp.norm();
-            if(para<0){
-                vec reflection_direction = unit_vec(r.getDirection() - hp.normal*2*(r.getDirection()*hp.normal));
-                reflected_ray = ray(hp.hit_point + reflection_direction*0.01,reflection_direction, r.getMax_reflection()-1);
-            }else{
+            vec reflection_direction = unit_vec(r.getDirection() - hp.normal*2*(r.getDirection()*hp.normal));
+            reflected_ray = ray(hp.hit_point + reflection_direction*0.01,reflection_direction, r.getMax_reflection()-1);
+            if(para>=0){
                 refracted_para = hp.normal*sqrt(para)*(-1);
                 vec refracted_direction = refracted_para + refracted_perp;
                 refracted_ray = ray(hp.hit_point + refracted_direction*0.001, refracted_direction, r.getMax_reflection()-1);

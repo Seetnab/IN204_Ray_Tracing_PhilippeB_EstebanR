@@ -90,9 +90,9 @@ class motor5: public render{
                 lights.hit_lights(hp, aScene, max_step);   
                 color c=hp.rgb;
                 if(refracted_ray.getDirection().norm()>0.01){
-                    c = ray_color(refracted_ray);
+                    c = ray_color(refracted_ray)*hp.mat->getTransmittance();
                     if(reflected_ray.getDirection().norm()>0.01){
-                        return (color_multiply(ray_color(reflected_ray),hp.rgb)+c)*0.5;
+                        return (color_multiply(ray_color(reflected_ray),hp.rgb)*hp.mat->getReflectance()+c)*0.5;
                     }
                     return c;
                 }if(reflected_ray.getDirection().norm()>0.01){

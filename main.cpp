@@ -28,69 +28,47 @@ int main(){
     default_material def;
     metal me;
     mirror mi;
-    glass gl;
+    glass gl(1,1);
     light_material lm;
-    std::vector<material*> v_material;
-    v_material.push_back(&def);
-    v_material.push_back(&d);
-    v_material.push_back(&me);
-    v_material.push_back(&mi);
-    v_material.push_back(&gl);
-    v_material.push_back(&lm);
-    // //Création et ajout des objets dans la scène
-     sphere s1(point(3,0,-1),1,color(1,0,0),&me);
-     sphere s2(point(-3,0,-2),1,color(1,1,1),&mi);
-     sphere s3(point(-4.5,0,-5),1,color(0,0,1),&d);
-     sphere s4(point(0,0,-7),1,color(0,0,1),&d);
-     sphere s5(point(0,-0.6,-1),0.4,color(1,0.1,0.1),&lm);
-     ground g(point(0,-1,0),vec(0,1,0),color(0.1,0.8,0.2),&d);
-     rectangle r(point(-2.5,-1,-5.5),vec(0,0,1),5,5,color(0.5,0.5,0.5),&gl);
+    //Création et ajout des objets dans la scène
+    sphere s1(point(3,0,-1),1,color(1,0,0),&me);
+    sphere s2(point(-3,0,-2),1,color(1,1,1),&gl);
+    sphere s3(point(-4.5,0,-5),1,color(0,0,1),&d);
+    sphere s4(point(0,0,-7),1,color(0,0,1),&d);
+    sphere s5(point(0,-0.6,-1),0.4,color(1,0.1,0.1),&lm);
+    ground g(point(0,-1,0),vec(0,1,0),color(0.1,0.8,0.2),&d);
+    rectangle r(point(-2.5,-1,-5.5),vec(0,0,1),5,5,color(1,1,1),&gl);
     aScene.add(&s1);
-     aScene.add(&s2);
-     aScene.add(&s3);
-     aScene.add(&s4);
-     aScene.add(&s5);
-     aScene.add(&g);
-     aScene.add(&r);
+    aScene.add(&s2);
+    aScene.add(&s3);
+    aScene.add(&s4);
+    aScene.add(&s5);
+    aScene.add(&g);
+    aScene.add(&r);
 
-    // //Création et ajout des lumières dans la scène
-     sky = ambient_light(vec(0,-1,0), color(1,1,1),1);
-     point_light l2(point(-2,-0.99,-1),color(1,1,1),0.9);
-     point_light l3(point(0,1,-2),color(1,1,1),0.9);
-     sphere_light sl(s5, 1);
-     lights.add(&sky);
-     lights.add(&l2);
-     lights.add(&l3);
+    //Création et ajout des lumières dans la scène
+    sky = ambient_light(vec(0,-1,0), color(1,1,1),0);
+    point_light l2(point(-2,-0.99,-1),color(1,1,1),0.9);
+    point_light l3(point(0,1,-2),color(1,1,1),0.9);
+    sphere_light sl(s5, 1);
+    lights.add(&sky);
+    lights.add(&l2);
+    lights.add(&l3);
     lights.add(&sl);
-    // std::ifstream fichier("scene1.txt", std::ios::in);  // on ouvre le fichier en lecture
-    // if(fichier) 
-    // {
-    //     std::string ligne;
-    //     while(getline(fichier, ligne))  // tant que l'on peut mettre la ligne dans "contenu"
-    //     {
-    //         std::cout << ligne << std::endl; 
-    //         if(ligne == "sphere"){
-    //             double value[8];
-    //             for(int i=0; i<8;i++){
-    //                 fichier >> value[i];
-    //             }
-    //             sphere s(point(value[0],value[1],value[2]),value[3], color(value[4],value[5],value[6]),v_material[value[7]]);
-    //             aScene.add(&s);
-    //             }
-            
-    //         if(ligne == "ground"){
-    //             double value[10];
-    //             for(int i=0; i<10;i++){
-    //                 fichier >> value[i];
-    //             }
-    //             ground g(point(value[0],value[1],value[2]),vec(value[3],value[4],value[5]),color(value[6],value[7],value[8]),v_material[value[9]]);
-    //             aScene.add(&g);
-    //         }
-    //     }
-    //     fichier.close();  
-    // }else{
-    //     std::cerr << "Impossible d'ouvrir le fichier !" << std::endl;
-    // }
+
+    //Tentative de création d'un lecteur;
+
+    //std::vector<material*> v_material;
+    //v_material.push_back(&def);
+    //v_material.push_back(&d);
+    //v_material.push_back(&me);
+    //v_material.push_back(&mi);
+    //v_material.push_back(&gl);
+    //v_material.push_back(&lm);
+    //std::string path = "scene1.txt";
+    //aScene.read_scene(path,v_material);
+    //std::cout << aScene.getList().size() << std::endl;
+
     //Positionnement de la caméra et définition de l'écran
     width = 1200;
     ratio = 16.0/9.0;

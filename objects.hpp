@@ -2,8 +2,10 @@
 # define OBJECTS_HPP
 
 # include <iostream>
+# include <fstream>
 # include <vector>
 # include <math.h>
+# include <string>
 # include "vec.hpp"
 
 
@@ -159,6 +161,38 @@ class scene{
                 return -1.0;
             }
             return step;
+        }
+        void read_scene(std::string image,std::vector<material*> v_material){
+            std::ifstream fichier(image, std::ios::in);  // on ouvre le fichier en lecture
+            std::cout << image << std::endl;
+            if(fichier) 
+            {
+                std::string ligne;
+                while(getline(fichier, ligne))  // tant que l'on peut mettre la ligne dans "contenu"
+                {
+                    std::cout << ligne << std::endl; 
+                    if(ligne == "sphere"){
+                        double value[8];
+                        for(int i=0; i<8;i++){
+                            fichier >> value[i];
+                        }
+                        sphere s(point(value[0],value[1],value[2]),value[3], color(value[4],value[5],value[6]),v_material[value[7]]);
+                        add(&s);
+                        }
+                    
+                    if(ligne == "ground"){
+                        double value[10];
+                        for(int i=0; i<10;i++){
+                            fichier >> value[i];
+                        }
+                        ground g(point(value[0],value[1],value[2]),vec(value[3],value[4],value[5]),color(value[6],value[7],value[8]),v_material[value[9]]);
+                        add(&g);
+                    }
+                }
+                fichier.close();  
+            }else{
+                std::cerr << "Impossible d'ouvrir le fichier !" << std::endl;
+            }
         }
 };
 
