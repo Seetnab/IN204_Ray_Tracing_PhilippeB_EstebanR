@@ -4,15 +4,6 @@
 #include <iostream>
 #include <fstream>
 #include "vec.hpp"
-#include "objects.hpp"
-#include "camera.hpp"
-#include "light.hpp"
-#include "material.hpp"
-#include <omp.h>
-#include <cmath>
-#include <vector>
-#include <chrono>
-#include <string>
 
 
 

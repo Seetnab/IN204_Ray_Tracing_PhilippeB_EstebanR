@@ -27,7 +27,6 @@ class camera{
             horizontal = vec(view_width, 0, 0);
             vertical = vec(0, view_height, 0);
             lower_left_corner = origin - horizontal/2 - vertical/2 - vec(0, 0, focal_length);
-            std::cout << lower_left_corner << std::endl;
             }
         //Caméra personnalisée
         camera(point anOrigin, point aFrame_center, double aHeight, double aRatio){
@@ -42,7 +41,6 @@ class camera{
             vec h;
             if(direction.getX()==0 && direction.getZ()==0){
                 h = unit_vec(direction.prod_vect(vec(1,0,0)));
-                std::cout << h << std::endl;
             }else{
                 h = unit_vec(direction.prod_vect(vec(0,1,0)));
             }

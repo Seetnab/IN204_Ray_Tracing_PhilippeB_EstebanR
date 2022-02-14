@@ -30,7 +30,6 @@ class motor1: public render{
             double view_height = 2.0;
             double view_width = ratio*view_height;
             double focal = 1.0;
-
             point origin = point(0,0,0);
             vec horizontal = vec(view_width, 0, 0);
             vec vertical = vec(0, view_height, 0);
