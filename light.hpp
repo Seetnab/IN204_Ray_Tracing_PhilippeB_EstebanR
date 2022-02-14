@@ -62,27 +62,24 @@ class point_light: public light{
 
 class sphere_light: public light{
     private:
-        sphere spherical;
+        sphere aSphere;
     public:
         sphere_light(){}
-        sphere_light(sphere s, color c, double i): light(c,i), spherical(s){}
+        sphere_light(sphere s, double i): light(s.getColor(),i), aSphere(s){}
         ~sphere_light(){}
         color getColor(){
             return rgb;
         }
-        point getCenter(){
-            return spherical.getCenter();
-        }
-        double getRadius(){
-            return spherical.getRadius();
+        point getOrigin(){
+            return aSphere.getCenter();
         }
         double getIntensity(){
             return intensity;
         }
         color hit_light(hit_position hp, scene aScene, int max){
             color c;
-            vec light_direction = unit_vec(spherical.getCenter() - hp.hit_point);
-            double distance = (spherical.getCenter() - hp.hit_point).norm()-spherical.getRadius()-0.01;
+            vec light_direction = unit_vec(aSphere.getCenter() - hp.hit_point);
+            double distance = (aSphere.getCenter() - hp.hit_point).norm()-aSphere.getRadius()-0.01;
             ray r(hp.hit_point + light_direction*0.001, light_direction, 0);
             hit_position nhp;
             double step = aScene.hit_list(r, nhp, max);
