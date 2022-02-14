@@ -4,6 +4,7 @@
 #include "motor2.hpp"
 #include "motor3.hpp"
 #include "motor4.hpp"
+#include "motor5.hpp"
 
 #define MAX_STEP 50
 #define MAX_REFLECTION 10
@@ -60,7 +61,8 @@ int main(){
     //motor1 aMotor(aScene, width, ratio, MAX_STEP);
     //motor2 aMotor(aScene, cam, width, ratio, MAX_STEP, NSAMPLES, MAX_REFLECTION);
     //motor3 aMotor(aScene, lights, sky, cam, width, ratio, MAX_STEP, NSAMPLES, MAX_REFLECTION);
-    motor4 aMotor(aScene, lights, sky, cam, width, ratio, MAX_STEP, NSAMPLES, MAX_REFLECTION, NTHREAD);
+    //motor4 aMotor(aScene, lights, sky, cam, width, ratio, MAX_STEP, NSAMPLES, MAX_REFLECTION);
+    motor5 aMotor(aScene, lights, sky, cam, width, ratio, MAX_STEP, NSAMPLES, MAX_REFLECTION, NTHREAD);
     aMotor.render_image();
     //std::cerr << "\nDone.\n";
     return 0;

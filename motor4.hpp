@@ -13,7 +13,7 @@
 #include <fstream>
 #include <vector>
 #include <chrono>
-#include <omp.h>
+
 
 
 
@@ -30,14 +30,13 @@ class motor4: public render{
         int max_step;               //Distance de parcours maximal d'un rayon
         int nsamples;               //Nombre de rayons par pixels
         int max_reflection;         //Nombre de réflexion maximal d'un rayon
-        int nthread;                //Nombre de threads OMP
         int height;                 //Hauteur de l'image
 
     public:
         motor4(){}
-        motor4(scene s, scene_lights sl, ambient_light sk, camera c, int w, double r, int ms, int samples, int mr, int nt): 
+        motor4(scene s, scene_lights sl, ambient_light sk, camera c, int w, double r, int ms, int samples, int mr): 
             aScene(s), lights(sl), sky(sk), cam(c), width(w), ratio(r), 
-            max_step(ms), nsamples(samples), max_reflection(mr), nthread(nt)
+            max_step(ms), nsamples(samples), max_reflection(mr)
                 { height = (int) width/ratio;}
         ~motor4(){}
         void render_image(){
@@ -45,7 +44,6 @@ class motor4: public render{
             std::vector<color> image(height*width);
             ofs << "P3\n" << width << " " << height << "\n255\n";
             auto start = std::chrono::system_clock::now();
-            #pragma omp parallel for schedule(dynamic) num_threads(nthread)
             for (int j = height-1; j>=0; --j){
                 for (int i=0; i<width; ++i){
                     color pixel_color;
