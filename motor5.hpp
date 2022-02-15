@@ -8,6 +8,8 @@
 #include "render.hpp"
 #include "light.hpp"
 #include "material.hpp"
+#include "ray.hpp"
+#include "tools.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -39,17 +41,21 @@ class motor5: public render{
             max_step(ms), nsamples(samples), max_reflection(mr), nthread(nt)
                 { height = (int) width/ratio;}
         ~motor5(){}
+
+        //Rendu de l'image
         void render_image(){
-            std::ofstream ofs("image.ppm", std::ios::out|std::ios::binary);
+            std::ofstream ofs("image_motor6.ppm", std::ios::out|std::ios::binary);
             std::vector<color> image(height*width);
             ofs << "P3\n" << width << " " << height << "\n255\n";
             auto start = std::chrono::system_clock::now();
+            //Parcours des pixels de l'image de manière parallélisée
             #pragma omp parallel for schedule(dynamic) num_threads(nthread)
             for (int j = height-1; j>=0; --j){
                 for (int i=0; i<width; ++i){
                     color pixel_color;
                     if(nsamples !=1){
                         for(int k=0; k<nsamples; k++){
+                            //Envoie de plusieurs rayons par pixel
                             double u = double(i + random_n(0,1)) / (width-1);
                             double v = double(j + random_n(0,1)) / (height-1);
                             ray r = cam.getRay(u,v,max_reflection);
@@ -70,6 +76,8 @@ class motor5: public render{
             write_color(ofs, image);
             ofs.close();
         }
+
+        //Colorisation des pixels
         color ray_color(ray& r){
             //Couleur des objets dans la scène
             hit_position hp;
@@ -81,13 +89,18 @@ class motor5: public render{
                 ray reflected_ray;
                 ray refracted_ray;
                 hp.mat->ray_interaction(r, hp, reflected_ray, refracted_ray);
+                //Si l'objet est un objet lumineux alors renvoie directement la couleur de la lumière
                 if(hp.mat->getName()=="light_material"){
                     return hp.rgb;
                 }
+                //Si l'objet est un mirroir alors on effectue la colorisation sur le rayon réfléchie
                 if(hp.mat->getName()=="mirror" && reflected_ray.getDirection()*hp.normal>0){
                     return ray_color(reflected_ray);
                 }
+                //Calcul des lumières
                 lights.hit_lights(hp, aScene, max_step);   
+                //Addition des couleurs fournies par les rayons réfractés et réflechis avec possibilité d'amoindrir 
+                //ou d'amplifier les effets de réflexion et de réfraction
                 color c=hp.rgb;
                 if(refracted_ray.getDirection().norm()>0.01){
                     c = ray_color(refracted_ray)*hp.mat->getTransmittance();
@@ -108,6 +121,8 @@ class motor5: public render{
                 return color_max(c);
             }
         }
+
+        //Ecriture des données dans le fichier .ppm
         void write_color(std::ofstream &out, std::vector<color> image){
             double ratio_samples = 1.0/nsamples;
             // Write the translated [0,255] value of each color component.

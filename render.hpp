@@ -3,10 +3,10 @@
 
 #include <iostream>
 #include <fstream>
-#include "vec.hpp"
+# include "ray.hpp"
 
 
-
+//Classe mère permettant la conception de plusieurs moteurs de rendu d'image par ray tracing
 class render{
     public:
         render(){}

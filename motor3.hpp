@@ -7,6 +7,8 @@
 #include "camera.hpp"
 #include "render.hpp"
 #include "light.hpp"
+#include "ray.hpp"
+#include "tools.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -38,15 +40,19 @@ class motor3: public render{
             max_step(ms), nsamples(samples), max_reflection(mr)
                 { height = (int) width/ratio;}
         ~motor3(){}
+
+        //Rendu de l'image
         void render_image(){
-            std::ofstream ofs("image.ppm", std::ios::out|std::ios::binary);
+            std::ofstream ofs("image_motor3.ppm", std::ios::out|std::ios::binary);
             std::vector<color> image(height*width);
             ofs << "P3\n" << width << " " << height << "\n255\n";
             auto start = std::chrono::system_clock::now();
+            //Parcours des pixels de l'image
             for (int j = height-1; j>=0; --j){
                 for (int i=0; i<width; ++i){
                     color pixel_color;
                     if(nsamples !=1){
+                        //Envoie de plusieurs rayons par pixel
                         for(int k=0; k<nsamples; k++){
                             double u = double(i + random_n(0,1)) / (width-1);
                             double v = double(j + random_n(0,1)) / (height-1);
@@ -68,6 +74,8 @@ class motor3: public render{
             write_color(ofs, image);
             ofs.close();
         }
+
+        //Colorisation des pixels
         color ray_color(ray& r){
             //Couleur des objets dans la scène
             hit_position hp;
@@ -75,9 +83,9 @@ class motor3: public render{
                 //Réflection aléatoire d'un rayon sur la surface d'un objet
                 vec ndirection = unit_vec(hp.normal + rand_unit_vec());
                 ray nr(hp.hit_point, ndirection, r.getMax_reflection()-1);
+                //Calcul des lumières
                 lights.hit_lights(hp, aScene, max_step);
                 color c = hp.rgb;   
-                //return hp.rgb;
                 return (color_multiply(ray_color(nr),hp.rgb)+c)*0.5;
             }else{
                 //Couleur du fond
@@ -88,9 +96,10 @@ class motor3: public render{
                 return c;
             }
         }
+
+        //Ecriture des données dans le fichier .ppm
         void write_color(std::ofstream &out, std::vector<color> image){
             double ratio_samples = 1.0/nsamples;
-            // Write the translated [0,255] value of each color component.
             for(int i=0; i<height*width; i++){
                 out << (int)(255.999 * sqrt(image[i].getX()*ratio_samples)) << ' '
                     << (int)(255.999 * sqrt(image[i].getY()*ratio_samples)) << ' '

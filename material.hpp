@@ -4,10 +4,13 @@
 #include <iostream>
 #include <string>
 #include "vec.hpp"
+#include "ray.hpp"
+#include "tools.hpp"
 
 
 struct hit_position;
 
+//Classe matériel mere, comprenant tous les outils d'interaction avec les rayons
 class material{
     protected:
         std::string name;
@@ -30,6 +33,8 @@ class material{
         
 };
 
+
+//Objet absorbant, ne renvoie aucun rayon
 class default_material: public material{
     private:
     public:
@@ -41,6 +46,7 @@ class default_material: public material{
         }
 };
 
+//Objet diffus, renvoie tous les rayons de manière aléatoire, aucune réfraction
 class diffuse_material: public material{
     private:
     public:
@@ -53,6 +59,7 @@ class diffuse_material: public material{
         }
 };
 
+//Renvoie tous les rayons reçu avec le même angle d'incidence avec une atténuation en fonction de la couleur du métal
 class metal: public material{
     private:
     public:
@@ -65,6 +72,8 @@ class metal: public material{
         }
 };
 
+
+//Renvoie tous les rayons pour obtenir la couleur exact de l'objet situé dans le même angle d'incidence tel un mirroir
 class mirror: public material{
     private:
     public:
@@ -77,6 +86,7 @@ class mirror: public material{
         }
 };
 
+//Associe un indice de réflexion et de réfraction pour simuler le comportement du verre
 class glass: public material{
     private:
         double glass_index;
@@ -106,6 +116,7 @@ class glass: public material{
         }
 };
 
+//Permet une distinction par rapport aux objets par défaut
 class light_material: public material{
     private:
     public:

@@ -2,6 +2,8 @@
 # define CAMERA_HPP
 
 # include "vec.hpp"
+#include "ray.hpp"
+#include "tools.hpp"
 
 class camera{
     public:
@@ -10,12 +12,12 @@ class camera{
         point frame_center;         //Point central de la fenêtre de visualisation
         double view_height;              //Hauteur de la fenêtre capturée par la caméra
         double view_width;               //Largeur de la fenêtre capturée par la caméra
-        double ratio;
+        double ratio;                    //Ratio largeur/hauteur
         //Données calculées
-        double focal_length;
-        vec horizontal;
-        vec vertical;
-        point lower_left_corner;
+        double focal_length;             //Distance focale
+        vec horizontal;                  //Vecteur horizontal décrivant le cadre
+        vec vertical;                    //Vecteur vertical décrivant le cadre
+        point lower_left_corner;         //Sommet bas gauche du cadre
     public:
         //Caméra par défaut
         camera(){

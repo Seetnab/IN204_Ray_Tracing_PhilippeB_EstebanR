@@ -7,10 +7,12 @@
 # include <math.h>
 # include <string>
 # include "vec.hpp"
+# include "ray.hpp"
 
 
 class material; 
 
+//Structure tampon qui garde les informations de l'objet touché en un point d'intersection avec un rayon
 struct hit_position{
     point hit_point;
     vec normal;
@@ -39,7 +41,6 @@ class sphere: public scene_basic_object{
         material* mat;
     public:
         sphere(){}
-        //Mettre le constructeur de la classe mère en premier pour faire appel au bon constructeur
         sphere(point aCenter, double aRadius, color aColor,material* m) :
             scene_basic_object(aColor), center(aCenter), radius(aRadius), mat(m){}
         ~sphere(){}
@@ -78,7 +79,6 @@ class ground: public scene_basic_object{
         material* mat;
     public:
         ground(){}
-        //Mettre le constructeur de la classe mère en premier pour faire appel au bon constructeur
         ground(point anOrigin, vec aNormal, color aColor, material* m) :
             scene_basic_object(aColor),origin(anOrigin), normal(aNormal), mat(m){}
         ~ground(){}
@@ -111,6 +111,7 @@ class rectangle: public scene_basic_object{
         rectangle(point anOrigin, vec aNormal, double aWidth, double aHeight, color aColor, material* m) :
             scene_basic_object(aColor), origin(anOrigin), normal(aNormal), width(aWidth), height(aHeight), mat(m){}
         ~rectangle(){}
+        //Renvoi step, qui est la distance entre le point d'origine du rayon et le point d'impact
         double hit_object(ray& r, struct hit_position& intersect){
             double delta = normal*r.getDirection();
             if(delta!=0){
@@ -147,6 +148,9 @@ class scene{
         void clear(){
             list_objects.clear();
         }
+        
+
+        //Parcours de la liste des objets et détermination du premier objet pour un rayon donné
         double hit_list(ray& r, struct hit_position& intersect, double max_step){
             hit_position tmp;
             double step = max_step;
@@ -162,6 +166,8 @@ class scene{
             }
             return step;
         }
+
+        //Tentative de lecture de fichier (n'est pas fonctionnel) via une première approche simpliste et réduite aux sphères et aux plans
         void read_scene(std::string image,std::vector<material*> v_material){
             std::ifstream fichier(image, std::ios::in);  // on ouvre le fichier en lecture
             std::cout << image << std::endl;

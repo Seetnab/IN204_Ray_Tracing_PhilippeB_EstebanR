@@ -28,8 +28,9 @@ int main(){
     default_material def;
     metal me;
     mirror mi;
-    glass gl(1,1);
+    glass gl(0.5,1);
     light_material lm;
+
     //Création et ajout des objets dans la scène
     sphere s1(point(3,0,-1),1,color(1,0,0),&me);
     sphere s2(point(-3,0,-2),1,color(1,1,1),&gl);
@@ -75,41 +76,60 @@ int main(){
     cam = camera(point(0,0.5,1),point(0,0,-1),2.0,ratio);
 
     //Rendu de l'image
-    int motor_index=0;
-    while(motor_index<=0 || motor_index>5){
+    int motor_index=-1;
+    while(motor_index<0 || motor_index>5){
         printf("Quel moteur de rendu voulez-vous utiliser ? : moteur1, moteur2, moteur3, moteur 4, moteur5\n");
-        printf("Entrez une valeur entre 1-5: "); 
+        printf("Entrez une valeur entre 1-5 pour choisir l'un des moteurs ou entrez 0 si vous voulez lancer tous les moteurs: "); 
         scanf("%d", &motor_index);
         if(motor_index==1){
             motor1 aMotor(aScene, width, ratio, MAX_STEP);
-            printf("Debut du rendu\n");
+            printf("Debut du rendu moteur 1\n");
             aMotor.render_image();
-            printf("Fin du rendu\n");
+            printf("Fin du rendu moteur 1\n");
         }else if(motor_index==2){
             motor2 aMotor(aScene, cam, width, ratio, MAX_STEP, NSAMPLES, MAX_REFLECTION);
-            printf("Debut du rendu\n");
+            printf("Debut du rendu moteur 2\n");
             aMotor.render_image();
-            printf("Fin du rendu\n");
+            printf("Fin du rendu moteur 2\n");
         }else if(motor_index==3){
             motor3 aMotor(aScene, lights, sky, cam, width, ratio, MAX_STEP, NSAMPLES, MAX_REFLECTION);
-            printf("Debut du rendu\n");
+            printf("Debut du rendu moteur 3\n");
             aMotor.render_image();
-            printf("Fin du rendu\n");
+            printf("Fin du rendu moteur 3\n");
         }else if(motor_index==4){
             motor4 aMotor(aScene, lights, sky, cam, width, ratio, MAX_STEP, NSAMPLES, MAX_REFLECTION);
-            printf("Debut du rendu\n");
+            printf("Debut du rendu moteur 4\n");
             aMotor.render_image();
-            printf("Fin du rendu\n");
+            printf("Fin du rendu moteur 4\n");
         }else if(motor_index==5){
             motor5 aMotor(aScene, lights, sky, cam, width, ratio, MAX_STEP, NSAMPLES, MAX_REFLECTION, NTHREAD);
-            printf("Debut du rendu\n");
+            printf("Debut du rendu moteur 5\n");
             aMotor.render_image();
-            printf("Fin du rendu\n");
+            printf("Fin du rendu moteur 5\n");
+        }else if(motor_index==0){
+            motor1 aMotor1(aScene, width, ratio, MAX_STEP);
+            printf("Debut du rendu moteur 1\n");
+            aMotor1.render_image();
+            printf("Fin du rendu moteur 1\n");
+            motor2 aMotor2(aScene, cam, width, ratio, MAX_STEP, NSAMPLES, MAX_REFLECTION);
+            printf("Debut du rendu moteur 2\n");
+            aMotor2.render_image();
+            printf("Fin du rendu moteur 2\n");
+            motor3 aMotor3(aScene, lights, sky, cam, width, ratio, MAX_STEP, NSAMPLES, MAX_REFLECTION);
+            printf("Debut du rendu moteur 3\n");
+            aMotor3.render_image();
+            printf("Fin du rendu moteur 3\n");
+            motor4 aMotor4(aScene, lights, sky, cam, width, ratio, MAX_STEP, NSAMPLES, MAX_REFLECTION);
+            printf("Debut du rendu moteur 4\n");
+            aMotor4.render_image();
+            printf("Fin du rendu moteur 4\n");
+            motor5 aMotor5(aScene, lights, sky, cam, width, ratio, MAX_STEP, NSAMPLES, MAX_REFLECTION, NTHREAD);
+            printf("Debut du rendu moteur 5\n");
+            aMotor5.render_image();
+            printf("Fin du rendu moteur 5\n");
         }else{
             printf("Error. Wrong input\n");
         }
     }
-    //std::cerr << "\nDone.\n";
-    // Error Handling
     return 0;
 }

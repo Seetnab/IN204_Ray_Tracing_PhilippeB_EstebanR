@@ -6,6 +6,8 @@
 #include "light.hpp"
 #include "vec.hpp"
 #include "camera.hpp"
+#include "ray.hpp"
+#include "tools.hpp"
 
 void render_scene1(scene& aScene, scene_lights& lights, ambient_light& sky, camera& cam, int& width, double& ratio ){
     //Liste des matériaux

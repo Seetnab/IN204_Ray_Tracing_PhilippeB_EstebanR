@@ -6,10 +6,12 @@
 # include "vec.hpp"
 # include "objects.hpp"
 # include "material.hpp"
+#include "ray.hpp"
+#include "tools.hpp"
 //# include "hit.hpp"
 
 
-
+//Classe mère permettant l'implémentation de lumière ayant une couleur et une intensité propre
 class light{
     protected:
         color rgb;
@@ -21,6 +23,8 @@ class light{
         virtual color hit_light(hit_position hp, scene aScene, int max)=0;
 };
 
+
+//Pixel lumineux
 class point_light: public light{
     private:
         point origin;
@@ -44,11 +48,13 @@ class point_light: public light{
             ray r(hp.hit_point + light_direction*0.01, light_direction, 0);
             hit_position nhp;
             double step = aScene.hit_list(r, nhp, max);
+            //interaction particulière des rayons avec le verre
             while(step > 0 && nhp.mat->getName()=="glass"){
                 ray nr(r.getOrigin() + r.move(step+0.001), r.getDirection(), r.getMax_reflection());
                 step = aScene.hit_list(nr, nhp, max) + 0.001;
                 r= nr;
             }
+            //Colorisation en fonction de la présence d'un objet devant la lumière ou non
             if(step<=0 || step>=distance){
                 double lambert = std::max(r.getDirection()*hp.normal,0.0);
                 double dist_dependency = 1/(1+distance);
@@ -60,6 +66,8 @@ class point_light: public light{
         }
 };
 
+
+//Sphère lumineuse
 class sphere_light: public light{
     private:
         sphere aSphere;
@@ -83,12 +91,13 @@ class sphere_light: public light{
             ray r(hp.hit_point + light_direction*0.001, light_direction, 0);
             hit_position nhp;
             double step = aScene.hit_list(r, nhp, max);
-            //std::cout << step << " " << distance << std::endl;
+            //interaction particulière des rayons avec le verre
             while(step > 0 && nhp.mat->getName()=="glass"){
                 ray nr(r.getOrigin() + r.move(step+0.001), r.getDirection(), r.getMax_reflection());
                 step = aScene.hit_list(nr, nhp, max) + 0.001;
                 r= nr;
             }
+            //Colorisation en fonction de la présence d'un objet devant la lumière ou non
             if(step<=0 || step>distance){
                 double lambert = std::max(r.getDirection()*hp.normal,0.0);
                 double dist_dependency = 1/(1+distance);
@@ -101,6 +110,7 @@ class sphere_light: public light{
 };
 
 
+//Lumière ambiante
 class ambient_light: public light{
     private:
         vec direction;
@@ -122,11 +132,13 @@ class ambient_light: public light{
             ray r(hp.hit_point + hp.normal*0.001, direction*(-1), 0);
             hit_position nhp;
             double step = aScene.hit_list(r, nhp, max);
+            //interaction particulière des rayons avec le verre
             while(step > 0 && nhp.mat->getName()=="glass"){
                 ray nr(r.getOrigin() + r.move(step+0.001), r.getDirection(), r.getMax_reflection());
                 step = aScene.hit_list(nr, nhp, max) + 0.001;
                 r= nr;
             }
+            //Colorisation en fonction de la présence d'un objet devant la lumière ou non
             if(step<0){
                 double lambert = std::max(r.getDirection()*hp.normal,0.0);
                 c = color_multiply(hp.rgb,rgb)*lambert*intensity;
@@ -138,6 +150,8 @@ class ambient_light: public light{
         }
 };
 
+
+//Classe permettant le parcours de la liste des lumières au sein de la scène
 class scene_lights{
     private:
         std::vector<light*> list_lights;
@@ -152,6 +166,7 @@ class scene_lights{
         }
         void hit_lights(hit_position& hp, scene aScene, int max){
             color c;
+            //Parcours des lumières et addition des couleurs selon les zones d'ombre et de lumière
             for(int i=0; i<(int) list_lights.size(); i++){
                 c = c + list_lights[i]->hit_light(hp,aScene,max);
             }

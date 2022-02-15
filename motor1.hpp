@@ -5,6 +5,8 @@
 #include "vec.hpp"
 #include "objects.hpp"
 #include "render.hpp"
+#include "ray.hpp"
+#include "tools.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -26,7 +28,10 @@ class motor1: public render{
         motor1(){}
         motor1(scene s, int w, double r, int ms): aScene(s), width(w), ratio(r), max_step(ms){ height = (int) width/ratio;}
         ~motor1(){}
+
+        //Rendu de l'image
         void render_image(){
+            //Définition du cadre de l'image
             double view_height = 2.0;
             double view_width = ratio*view_height;
             double focal = 1.0;
@@ -34,11 +39,11 @@ class motor1: public render{
             vec horizontal = vec(view_width, 0, 0);
             vec vertical = vec(0, view_height, 0);
             point lw_lft_corner = origin - horizontal/2 - vertical/2 - vec(0, 0, focal);
-            //Rendu de l'image
             auto start = std::chrono::system_clock::now();
-            std::ofstream ofs("image.ppm", std::ios::out|std::ios::binary);
+            std::ofstream ofs("image_motor1.ppm", std::ios::out|std::ios::binary);
             std::vector<color> image(height*width);
             ofs << "P3\n" << width << " " << height << "\n255\n";
+            //Parcours des pixels de l'image
             for (int j = height-1; j>=0; --j){
                 for (int i=0; i<width; ++i){
                     double u = double(i) / (width-1);
@@ -55,6 +60,8 @@ class motor1: public render{
             write_color(ofs, image);
             ofs.close();
         }
+
+        //Colorisation des pixels de l'image
         color ray_color(ray& r){
             //Couleur des objets dans la scène
             hit_position hp;
@@ -67,8 +74,9 @@ class motor1: public render{
             color c=color(1.0, 1.0, 1.0)*(1.0-t) + color(0.5, 0.7, 1.0)*t;
             return c;
         }
+
+        //Ecriture des données dans le fichier .ppm
         void write_color(std::ofstream &out, std::vector<color> image){
-           // Write the translated [0,255] value of each color component.
             for(int i=0; i<height*width; i++){
                 out << (int)(255.999 * image[i].getX()) << ' '
                     << (int)(255.999 * image[i].getY()) << ' '
